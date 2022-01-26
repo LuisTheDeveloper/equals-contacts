@@ -1,7 +1,6 @@
 export const fetchWrapper = {
     get,
     post,
-    postForm,
     put,
     delete: _delete,
   };
@@ -31,15 +30,6 @@ export const fetchWrapper = {
       else options.body = body;
   
       return fetch(baseURL + url, options).then(handleResponse);
-  }
-  
-  function postForm(url, body) {
-    const options = {...requestOptions};
-    delete options.headers["Content-Type"]
-    options.method = 'POST';
-    options.body = body;
-  
-    return fetch(baseURL + url, options).then(handleResponse);
   }
   
   function put(url, body) {
