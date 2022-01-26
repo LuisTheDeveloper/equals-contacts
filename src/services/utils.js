@@ -3,6 +3,8 @@ import moment from "moment";
 
 export const setTransaction = (mode, body) => {
     const currentDateTime = moment().format();
+    const {id, name, birthday, email, phone} = body;
+    
     switch (mode) {
         case "add":
             Object.defineProperty(body, 'createdAt', {
@@ -26,10 +28,22 @@ export const setTransaction = (mode, body) => {
                 return error;
               }
         case "delete":
-            console.log("DELETE")
-            break;                 
+            try {
+                return fetchWrapper
+                  .delete(`contacts/${id}`)
+                  .then((response) => {
+                    console.log(response);
+                    return response;
+                  })
+                  .catch((error) => {
+                    console.log(error);
+                    return error;
+                  })
+              } catch (error) {
+                console.log(error);
+                return error;
+              }             
         case "edit":
-            const {id, name, birthday, email, phone} = body;
             try {
                 return fetchWrapper
                   .put(`contacts/${id}`, 
@@ -58,9 +72,7 @@ export const setTransaction = (mode, body) => {
 }
 
 export const getNewId = (data) => {
-    
     // Get the highest id value
     const newId = data.reduce((acc, value) => acc = acc > Number(value.id) ? acc : Number(value.id), 0);
-
     return newId + 1;
 }
