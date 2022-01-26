@@ -1,37 +1,76 @@
 import {useState, useEffect} from 'react';
 import styled from 'styled-components';
-import ContactList from './components/ContactList';
+import {ContactList} from './components/ContactList';
+import { fetchWrapper } from './services/fetch';
+
+export const Container = styled.div`
+    padding-right: 15px;
+    padding-left: 15px;
+    margin-right: auto;
+    margin-left: auto;
+    max-width: 1140px;
+    width: 100%;
+`;
+
+export const TableTitle = styled.div`
+    background: #435d7d;
+    border-radius: 3px 3px 0 0;
+    color: #fff;
+    font-size: 2rem;
+    font-weight: 800;
+    min-width: 100%;
+    padding: 16px 30px;
+    text-align: center;
+`;
 
 export const Wrapper = styled.div`
-  align-items: center;
-  display: flex;
-  flex-direction: column;
-  padding: 2rem;
+    align-items: center;
+    background: #ffffff;
+    border-radius: 3px;
+    box-shadow: 0 1px 1px rgb(0 0 0 / 5%);  
+    display: flex;
+    flex-direction: column;
+    min-width: 1000px;
+    padding: 2rem;
 `;
 
 export const App = () => {
-  const [contacts, setContacts] = useState([])
+  const [contacts, setContacts] = useState([]);
+  const [refresh, setRefresh] = useState(false);
 
   useEffect(() => {
     (async () => {
       let contactsData;
       try {
-        const response = await fetch('https://61c32f169cfb8f0017a3e9f4.mockapi.io/api/v1/contacts');
-        contactsData = await response.json();
+        return fetchWrapper
+          .get('contacts')
+          .then((response) => {
+            contactsData = response
+            setContacts(contactsData)
+            setRefresh(false);
+            console.log("App useEffect ()")
+            return contactsData;
+          })
+          .catch((error) => {
+            console.log(error);
+            return error;
+          })
       } catch (error) {
         console.log(error)
         contactsData = [];
       }
-    setContacts(contactsData)
     })();
-  },[])
+  },[refresh])
 
   return (
-    <Wrapper>
-      {contacts.map((contact, index) => (
-        <ContactList contactData={contact} key={contact.id}/>
-      ))}
-  </Wrapper>
+    <Container>
+      <Wrapper>
+        <TableTitle>Contacts List</TableTitle>
+        {contacts.map((contact, index) => (
+          <ContactList contactData={contact} key={contact.id} refresh={() => setRefresh(true)}/>
+        ))}
+    </Wrapper>
+  </Container>
   );
 };
 
