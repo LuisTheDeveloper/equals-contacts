@@ -53,13 +53,16 @@ const EditForm = ({contact, edit, close, refresh}) =>{
     const newId = useContext(IdContext);
     const id = mode === "add" ? newId : contact.id
 
-    const [name, setName] = useState(contact.name);
-    const [birthday, setBirthday] = useState(contact.birthday);
-    const [email, setEmail] = useState(contact.email);
-    const [phone, setPhone] = useState(contact.phone);
+    const [name, setName] = useState(mode === "add" ? "" : contact.name);
+    const [birthday, setBirthday] = useState(mode === "add" ? "" : contact.birthday);
+    const [email, setEmail] = useState(mode === "add" ? "" : contact.email);
+    const [phone, setPhone] = useState(mode === "add" ? "" : contact.phone);
+
+
 
     const handleSubmit = (e) => {
-       
+       if(name === "" || email === "" || birthday === "" || phone === "") return false;
+
         const body = {
             id: id,
             name: name,
@@ -107,6 +110,8 @@ const EditForm = ({contact, edit, close, refresh}) =>{
                                 fullWidth={true}
                                 size='small'
                                 onChange={(e)=> setName(e.target.value)}
+                                error={name === ""}
+                                helperText={name === "" ? "Name required" : ""}                                
                             />            
                         </Wrapper>
 
@@ -118,7 +123,9 @@ const EditForm = ({contact, edit, close, refresh}) =>{
                                 defaultValue={mode !== "add" ? email : null}
                                 fullWidth={true}
                                 size='small'         
-                                onChange={(e)=> setEmail(e.target.value)}            
+                                onChange={(e)=> setEmail(e.target.value)}        
+                                error={email === ""}
+                                helperText={email === "" ? "Email required" : ""}                                       
                             />   
                         </Wrapper>
                         <Wrapper>
@@ -128,7 +135,9 @@ const EditForm = ({contact, edit, close, refresh}) =>{
                                 label="Birthday"
                                 defaultValue={mode !== "add" ? birthday : null}
                                 size='small'       
-                                onChange={(e)=> setBirthday(e.target.value)}                      
+                                onChange={(e)=> setBirthday(e.target.value)}    
+                                error={birthday === ""}
+                                helperText={birthday === "" ? "Birthday required" : ""}                     
                             />                             
                             <TextField
                                 disabled={!edit}
@@ -136,7 +145,9 @@ const EditForm = ({contact, edit, close, refresh}) =>{
                                 label="Phone"
                                 defaultValue={mode !== "add" ? phone : null}
                                 size='small'      
-                                onChange={(e)=> setPhone(e.target.value)}                       
+                                onChange={(e)=> setPhone(e.target.value)}   
+                                error={phone === ""}
+                                helperText={phone === "" ? "Phone required" : ""}                       
                             />                
                         </Wrapper>     
                         { (edit || mode === "delete") &&
