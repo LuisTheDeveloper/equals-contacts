@@ -1,7 +1,8 @@
-import {useState, useEffect} from 'react';
+import {createContext, useState, useEffect} from 'react';
 import styled from 'styled-components';
 import {ContactList} from './components/ContactList';
 import { fetchWrapper } from './services/fetch';
+import { getNewId } from './services/utils';
 
 export const Container = styled.div`
     padding-right: 15px;
@@ -34,6 +35,8 @@ export const Wrapper = styled.div`
     padding: 2rem;
 `;
 
+export const IdContext = createContext(0);
+
 export const App = () => {
   const [contacts, setContacts] = useState([]);
   const [refresh, setRefresh] = useState(false);
@@ -48,7 +51,6 @@ export const App = () => {
             contactsData = response
             setContacts(contactsData)
             setRefresh(false);
-            console.log("App useEffect ()")
             return contactsData;
           })
           .catch((error) => {
@@ -62,12 +64,16 @@ export const App = () => {
     })();
   },[refresh])
 
+  const newId = getNewId(contacts);
+
   return (
     <Container>
       <Wrapper>
         <TableTitle>Contacts List</TableTitle>
         {contacts.map((contact, index) => (
-          <ContactList contactData={contact} key={contact.id} refresh={() => setRefresh(true)}/>
+          <IdContext.Provider value={newId}>
+            <ContactList contactData={contact} key={contact.id} refresh={() => setRefresh(true)}/>
+          </IdContext.Provider>
         ))}
     </Wrapper>
   </Container>

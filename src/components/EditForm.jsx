@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import TextField from '@mui/material/TextField';
 import {useState} from 'react';
 import Button from './Button';
+import { IdContext } from '../App';
 import { EditModeContext } from './ContactList';
 import { setTransaction } from '../services/utils';
 
@@ -49,7 +50,8 @@ export const Wrapper = styled.div`
 
 const EditForm = ({contact, edit, close, refresh}) =>{
     const mode = useContext(EditModeContext);
-    const id = contact.id;
+    const newId = useContext(IdContext);
+    const id = mode === "add" ? newId : contact.id
 
     const [name, setName] = useState(contact.name);
     const [birthday, setBirthday] = useState(contact.birthday);
@@ -57,6 +59,7 @@ const EditForm = ({contact, edit, close, refresh}) =>{
     const [phone, setPhone] = useState(contact.phone);
 
     const handleSubmit = (e) => {
+       
         const body = {
             id: id,
             name: name,
@@ -64,7 +67,7 @@ const EditForm = ({contact, edit, close, refresh}) =>{
             email: email,
             phone: phone,
         }
-
+        
         setTransaction(mode, body);
         close();
         refresh();

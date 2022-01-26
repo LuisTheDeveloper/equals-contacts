@@ -1,12 +1,30 @@
 import { fetchWrapper } from "./fetch";
+import moment from "moment";
 
 export const setTransaction = (mode, body) => {
-    console.log("mode: ", mode);
-    console.log("body: ", body);
+    const currentDateTime = moment().format();
     switch (mode) {
         case "add":
-            console.log("ADD")
-            break;
+            Object.defineProperty(body, 'createdAt', {
+                value: currentDateTime,
+                writable: false
+            })
+            try {
+                return fetchWrapper
+                  .post('contacts', body
+                  )
+                  .then((response) => {
+                    console.log(response);
+                    return response;
+                  })
+                  .catch((error) => {
+                    console.log(error);
+                    return error;
+                  })
+              } catch (error) {
+                console.log(error);
+                return error;
+              }
         case "delete":
             console.log("DELETE")
             break;                 
@@ -37,4 +55,12 @@ export const setTransaction = (mode, body) => {
         default:
             break;
     }    
+}
+
+export const getNewId = (data) => {
+    
+    // Get the highest id value
+    const newId = data.reduce((acc, value) => acc = acc > Number(value.id) ? acc : Number(value.id), 0);
+
+    return newId + 1;
 }
