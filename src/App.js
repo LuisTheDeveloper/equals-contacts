@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import {ContactList} from './components/ContactList';
 import { fetchWrapper } from './services/fetch';
 import { getNewId } from './services/utils';
+import TextField from '@mui/material/TextField';
 
 export const Container = styled.div`
     padding-right: 15px;
@@ -35,23 +36,26 @@ export const Wrapper = styled.div`
     padding: 2rem;
 `;
 
+export const FilterDiv = styled.div`
+  padding: 1rem;
+`;
+
 export const IdContext = createContext(0);
 
 export const App = () => {
   const [contacts, setContacts] = useState([]);
   const [refresh, setRefresh] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     (async () => {
-      let contactsData;
       try {
         return fetchWrapper
           .get('contacts')
           .then((response) => {
-            contactsData = response
-            setContacts(contactsData)
+            setContacts(response)
             setRefresh(false);
-            return contactsData;
+            return response;
           })
           .catch((error) => {
             console.log(error);
@@ -59,10 +63,20 @@ export const App = () => {
           })
       } catch (error) {
         console.log(error)
-        contactsData = [];
+        return error;
       }
     })();
   },[refresh])
+
+  useEffect(() => {
+    if( Array.isArray(contacts) && contacts.length > 0) {
+      const filteredData = contacts.filter((item) => item.name.toLowerCase().includes(searchTerm));
+      setContacts(filteredData);
+    }
+
+    if(searchTerm === '') setRefresh(true);
+
+  }, [searchTerm]);
 
   const newId = getNewId(contacts);
 
@@ -70,6 +84,12 @@ export const App = () => {
     <Container>
       <Wrapper>
         <TableTitle>Contacts List</TableTitle>
+        <FilterDiv>
+          <TextField
+            placeholder="Search Contact Name"
+            onChange={(e) => setSearchTerm(e.target.value.toLowerCase())}
+          />
+        </FilterDiv>        
         {contacts.map((contact, index) => (
           <IdContext.Provider value={newId}>
             <ContactList contactData={contact} key={contact.id} refresh={() => setRefresh(true)}/>
