@@ -13,7 +13,7 @@ export const Card = styled.div`
     box-shadow: 0 0 28px 4px rgba(0,0,0,0.1);
     display: flex;
     flex-direction: column;
-    left: 41%;
+    left: 31%;
     margin: 2rem 2rem 0.5rem 0;
     position: absolute;
     padding: 1.5rem;
